@@ -3,9 +3,19 @@
 #include <math.h>
 #define DO(n,x) {int i=0,_i=(n);for(;i<_i;++i){x;}}
 #define BAR(s1, s2) printf("%s%s%s%s%s%s%s%s", (s1), (s2), (s2), (s2), (s2), (s2), (s2), (s2));
-#define LINE(x, y, z) (z)?printf("\t   L%d\t\u2503\t%d\t\u2503\t%d\n",(x),(y),(z)):printf("\t   L%d\t\u2503\t%d\t\u2503\t---\n",(x),(y));
+#define LINE(x, y, z) (z)?printf("\t   L%d\t\u2503\t%d\t\u2503\t%d\n",(x+1),(y),(z)):printf("\t   L%d\t\u2503\t%d\t\u2503\t---\n",(x+1),(y));
 
 int len;
+
+int find_max(int* arr)
+{
+	int _i = 0, i;
+	for (i = 0; i < len; i++) {
+		if (arr[i] > arr[_i])
+			_i = i;
+	}
+	return _i;
+}
 
 char yes_or_no(char* string) 
 {	
@@ -28,8 +38,8 @@ void horizontal_table(int* array)
 {
 	int k = one_line_edge();
 
-	printf("\n\t\t");
-	DO(len, printf("\u2503  L%d\t", i))
+	printf("\n\n\t\t");
+	DO(len, printf("\u2503  L%d\t", i + 1))
 
 	printf("\n\t");
 	BAR("\u2501", "\u2501");
@@ -52,7 +62,7 @@ void vertical_table(int* array)
 {
 	int k = one_line_edge();
 
-	printf("\n\t\t\u2503\tfound\t\u2503\tlost\n");
+	printf("\n\n\t\t\u2503     found\t\u2503     lost\n");
 	BAR("\t\u2501", "\u2501");
 
 	DO(2, BAR("\u254b", "\u2501")BAR("\u2501", "\u2501"));
@@ -65,7 +75,8 @@ void vertical_table(int* array)
 
 int* get_info()
 {
-	int *array, i, j;
+	int *array, i;
+	char c = ' ';
 	array = malloc(sizeof(int) * len);
 
 	for (i = 0; i < len; i++) {
@@ -75,7 +86,9 @@ int* get_info()
 			i--;
 		}
 	}
-	getchar();
+	while (c != '\n' && c)
+		scanf("%c", &c);
+
 	return array;
 }
 
@@ -84,9 +97,9 @@ int check(int *array, int max)
 {
 	for (int i = 0; i < len; i++)
 		if (array[i] > max)
-			return ++i;
+			return 0;
 
-	return 0;
+	return 1;
 }
 
 //	вычисление минимальной размерности пространства
@@ -101,9 +114,7 @@ int calc_dim(int *array)
 
 	max_edge = one_line_edge();
 
-	num = check(array, max_edge);
-
-	if (!num) {
+	if (check(array, max_edge)) {
 		if (yes_or_no("\tvertical output [else: horizontal]?"))
 			vertical_table(array);
 		else 
@@ -112,8 +123,9 @@ int calc_dim(int *array)
 		return len;
 	}
 	else {
-		num--;
+		num = find_max(array);
 		array = realloc(array, sizeof(int) * ++len);
+
 		array[len - 1] = array[num] / 2 + array[num] % 2;
 		array[num] /= 2;
 		return calc_dim(array);
