@@ -6,6 +6,17 @@
 
 int len;
 
+char yes_or_no(char* string) 
+{	
+	char c;
+	printf("%s [y/n]  ", string);
+	scanf("%c", &c);
+	getchar();
+	if (c == 'y')
+		return 1;
+	return 0;
+}
+
 //	количество ребер в одной плоскости
 int one_line_edge()
 {
@@ -48,7 +59,7 @@ int* get_info()
 			i--;
 		}
 	}
-
+	getchar();
 	return array;
 }
 
@@ -92,6 +103,7 @@ int calc_dim(int *array)
 
 int main()
 {
+	loop: 
 	printf("\n\tenter number of lengths and number of edges of each length\n\n\t");
 	scanf("%d", &len);
 
@@ -101,6 +113,8 @@ int main()
 	}
 
 	printf("\n\tN - %d\n\t\n", calc_dim(get_info()));
+	if (yes_or_no("\tfind another dimesion?"))
+		goto loop;
 	return 0;
 }
 
