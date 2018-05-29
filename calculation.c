@@ -2,16 +2,22 @@
 #include <stdlib.h> 
 #include <math.h>
 #define DO(n,x) {int i=0,_i=(n);for(;i<_i;++i){x;}}
-#define BAR(s1, s2) printf("%s%s%s%s%s%s%s%s", (s1), (s2), (s2), (s2), (s2), (s2), (s2), (s2));
+#define BAR(s1,s2) {printf("%s",(s1));DO(7,printf("%s",(s2)));}
+
 #define LINE(x, y, z) (z)?printf("\t   L%d\t\u2503\t%d\t\u2503\t%d\n",(x+1),(y),(z)):printf("\t   L%d\t\u2503\t%d\t\u2503\t---\n",(x+1),(y));
+
+typedef struct Rod {
+	int col;
+	int num;
+} rod;
 
 int len;
 
-int find_max(int* arr)
+int find_max(rod* arr)
 {
 	int _i = 0, i;
 	for (i = 0; i < len; i++) {
-		if (arr[i] > arr[_i])
+		if (arr[i].num > arr[_i].num)
 			_i = i;
 	}
 	return _i;
@@ -34,7 +40,7 @@ int one_line_edge()
 	return pow(2, len - 1);
 }
 
-void horizontal_table(int* array)
+void horizontal_table(rod* array)
 {
 	int k = one_line_edge();
 
@@ -46,10 +52,13 @@ void horizontal_table(int* array)
 	DO(len, BAR("\u254b", "\u2501"));
 
 	printf("\n\tfound\t");
-	DO(len, printf("\u2503  %d\t", array[i]);)
+	DO(len, printf("\u2503  \x1B[%dm%d\x1B[0m\t", array[i].col + 31, array[i].num));
+
+
+	// DO(len, printf("\u2503  %d\t", array[i]);)
 
 	printf("\n\tlost\t");
-	DO(len, k - array[i] ? printf("\u2503  %d\t", k - array[i]) : printf("\u2503  -\t");)
+	DO(len, k - array[i].num ? 	printf("\u2503  %d\t", k - array[i].num) 	: 		printf("\u2503  -\t");)
 
 	printf("\n\t");
 	BAR("\u2501", "\u2501");
@@ -57,8 +66,8 @@ void horizontal_table(int* array)
 
 	free(array);
 }
-
-void vertical_table(int* array)
+/*
+void vertical_table(rod* array)
 {
 	int k = one_line_edge();
 
@@ -68,21 +77,24 @@ void vertical_table(int* array)
 	DO(2, BAR("\u254b", "\u2501")BAR("\u2501", "\u2501"));
 
 	printf("\n");
-	DO(len, LINE(i, array[i], k - array[i]));
+	DO(len, LINE(i, array[i], k - array[i].num));
 	printf("\n");
 	free(array);
 }
-
-int* get_info()
+*/
+rod* get_info()
 {
-	int *array, i;
+	int i;
+	rod *array;
 	char c = ' ';
-	array = malloc(sizeof(int) * len);
+	array = malloc(sizeof(rod) * len);
 
 	for (i = 0; i < len; i++) {
-		scanf("%d", &array[i]);
-		if (array[i] < 1) {
-			array = realloc(array, sizeof(int) * (--len));
+		scanf("%d", &(array[i].num));
+		
+		array[i].col = (i < 7 || i > 9) ? i : i + 3;		//<	colour magic ^***^
+		if (array[i].num < 1) {
+			array = realloc(array, sizeof(rod) * (--len));
 			i--;
 		}
 	}
@@ -93,19 +105,19 @@ int* get_info()
 }
 
 //	проверка на превышение лимита количества ребер одной плоскости
-int check(int *array, int max)
+int check(rod *array, int max)
 {
 	for (int i = 0; i < len; i++)
-		if (array[i] > max)
+		if (array[i].num > max)
 			return 0;
 
 	return 1;
 }
 
 //	вычисление минимальной размерности пространства
-int calc_dim(int *array)
+int calc_dim(rod *array)
 {
-	int num, k, max_edge;
+	int n, k, max_edge;
 
 	if (!len) {
 		printf("\t\e[31mERROR:\e[0m incorrect input\n");
@@ -115,19 +127,20 @@ int calc_dim(int *array)
 	max_edge = one_line_edge();
 
 	if (check(array, max_edge)) {
-		if (yes_or_no("\tvertical output [else: horizontal]?"))
+		/*if (yes_or_no("\tvertical output [else: horizontal]?"))
 			vertical_table(array);
-		else 
+		else */
 			horizontal_table(array);
 
 		return len;
 	}
 	else {
-		num = find_max(array);
-		array = realloc(array, sizeof(int) * ++len);
+		n = find_max(array);
+		array = realloc(array, sizeof(rod) * ++len);
 
-		array[len - 1] = array[num] / 2 + array[num] % 2;
-		array[num] /= 2;
+		array[len - 1].num = array[n].num / 2 + array[n].num % 2;
+		array[len - 1].col = array[n].col;
+		array[n].num /= 2;
 		return calc_dim(array);
 	}
 	return 0;
