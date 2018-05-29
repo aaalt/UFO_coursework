@@ -133,7 +133,7 @@ int main()
 	}
 
 	printf("\n\tN - %d\n\t\n", calc_dim(get_info()));
-	if (yes_or_no("\tfind another dimesion?"))
+	if (yes_or_no("\tfind another dimension?"))
 		goto loop;
 	return 0;
 }
