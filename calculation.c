@@ -3,6 +3,7 @@
 #include <math.h>
 #define DO(n,x) {int i=0,_i=(n);for(;i<_i;++i){x;}}
 #define BAR(s1, s2) printf("%s%s%s%s%s%s%s%s", (s1), (s2), (s2), (s2), (s2), (s2), (s2), (s2));
+#define LINE(x, y, z) (z)?printf("\t   L%d\t\u2503\t%d\t\u2503\t%d\n",(x),(y),(z)):printf("\t   L%d\t\u2503\t%d\t\u2503\t---\n",(x),(y));
 
 int len;
 
@@ -23,7 +24,7 @@ int one_line_edge()
 	return pow(2, len - 1);
 }
 
-void print_table(int* array)
+void horizontal_table(int* array)
 {
 	int k = one_line_edge();
 
@@ -38,12 +39,27 @@ void print_table(int* array)
 	DO(len, printf("\u2503  %d\t", array[i]);)
 
 	printf("\n\tlost\t");
-	DO(len, printf("\u2503  %d\t", k - array[i]);)
+	DO(len, k - array[i] ? printf("\u2503  %d\t", k - array[i]) : printf("\u2503  -\t");)
 
 	printf("\n\t");
 	BAR("\u2501", "\u2501");
 	DO(len, BAR("\u253b", "\u2501"));
 
+	free(array);
+}
+
+void vertical_table(int* array)
+{
+	int k = one_line_edge();
+
+	printf("\n\t\t\u2503\tfound\t\u2503\tlost\n");
+	BAR("\t\u2501", "\u2501");
+
+	DO(2, BAR("\u254b", "\u2501")BAR("\u2501", "\u2501"));
+
+	printf("\n");
+	DO(len, LINE(i, array[i], k - array[i]));
+	printf("\n");
 	free(array);
 }
 
@@ -88,7 +104,11 @@ int calc_dim(int *array)
 	num = check(array, max_edge);
 
 	if (!num) {
-		print_table(array);
+		if (yes_or_no("\tvertical output [else: horizontal]?"))
+			vertical_table(array);
+		else 
+			horizontal_table(array);
+
 		return len;
 	}
 	else {
