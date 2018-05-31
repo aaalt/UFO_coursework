@@ -141,8 +141,9 @@ int calc_dim(rod *array)
 
 		for (i = 0; m_e_ <= array[n].num/2; i++) 
 			m_e_ = one_line_edge(len + i);
-	
-		m_e_ /= 2;
+		m_e_ = (m_e_ - array[n].num/2 < array[n].num/2 - m_e_/2) ? m_e_ : m_e_/2;
+
+		// m_e_ /= 2;
 		array[len - 1].num = m_e_;
 		array[len - 1].col = array[n].col;
 
