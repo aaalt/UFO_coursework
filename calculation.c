@@ -1,100 +1,88 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <math.h>
-#define DO(n,x) {int i=0,_i=(n);for(;i<_i;++i){x;}}
-#define BAR(s1,s2) {printf("%s",(s1));DO(7,printf("%s",(s2)));}
-
-#define LINE(x, y, z) (z)?printf("\t    \x1B[%dmL%d\t\x1B[0m\u2503\t\x1B[%dm%d\t\x1B[0m\u2503\t\x1B[0m%d\n",(y.col),(x+1),(y.col),(y.num),(z)):printf("\t    \x1B[%dmL%d\t\x1B[0m\u2503\t\x1B[%dm%d\t\x1B[0m\u2503\t\x1B[0m---\n",(y.col),(x+1),(y.col),(y.num));
-
-typedef struct Rod {
-	int col;
-	int num;
-} rod;
+#include "calc.h"
 
 int len;
 
-int find_max(rod* arr)
-{
-	int _i = 0, i;
-	for (i = 0; i < len; i++) {
-		if (arr[i].num > arr[_i].num)
-			_i = i;
-	}
-	return _i;
-}
-
-char yes_or_no(char* string) 
+//	пользовательский ввод да/нет
+char y_or_n(char* string) 
 {	
 	char c;
-	printf("%s [y/n]  ", string);
+	O("%s [y/n]  ", string);
 	scanf("%c", &c);
 	getchar();
 	if (c == 'y')
-		return 1;
-	return 0;
+		R 1;
+	R 0;
 }
 
-//	количество ребер в одной плоскости
-int one_line_edge(int n)
+//	количество ребер в одном измерении n-параллелепипеда
+int edges_in_one_dim(int n)
 {
-	return pow(2, n - 1);
+	R pow(2, n - 1);
 }
 
-void horizontal_table(rod* array)
+//	вывод результатов горизонтальной таблицей
+void hor_tbl(rod* arr)
 {
-	int k = one_line_edge(len);
+	int k = edges_in_one_dim(len);
 
-	printf("\n\n\t\t");
-	DO(len, printf("\u2503\tL%d\t", i + 1))
+	O("\n\n\t\t");
+	DO(len, O(""VER"\tL%d\t", i + 1))
 
-	BAR("\n\t\u2501", "\u2501");
+	BAR("\n\t"HOR"", ""HOR"");
 
-	DO(len, BAR("\u254b", "\u2501")BAR("\u2501", "\u2501"));
+	DO(len, BAR(""CRS"", ""HOR"")BAR(""HOR"", ""HOR""));
 
-	// DO(len, BAR("\u254b", "\u2501"));
+	O("\n\tfound\t");
+	DO(len, O(""VER" \x1B[%dm     %d\x1B[0m\t", arr[i].col, arr[i].num));
 
-	printf("\n\tfound\t");
-	DO(len, printf("\u2503 \x1B[%dm     %d\x1B[0m\t", array[i].col, array[i].num));
-
-	printf("\n\tlost\t");
-	DO(len, k - array[i].num ? 	printf("\u2503      %d\t", k - array[i].num) 	: 		printf("\u2503      -\t");)
-
-	BAR("\n\t\u2501", "\u2501");
-	DO(len, BAR("\u253b", "\u2501")BAR("\u2501", "\u2501"));
-
-	free(array);
+	O("\n\tlost\t");
+	DO(len, {O(""VER"      "); k - arr[i].num ? O("%d\t", k = arr[i].num) : O("---\t");})			
+	BAR("\n\t"HOR"", ""HOR"");
+	DO(len, BAR(""CLP"", ""HOR"")BAR(""HOR"", ""HOR""));
+	free(arr);
 }
 
-void vertical_table(rod* array)
+//	вывод результатов вертикальной таблицой
+void ver_tbl(rod* arr)
 {
-	int k = one_line_edge(len);
+	int k = edges_in_one_dim(len);
 
-	printf("\n\n\t\t\u2503     found\t\u2503     lost\n");
-	BAR("\t\u2501", "\u2501");
+	O("\n\n\t\t"VER"     found\t"VER"     lost\n");
+	BAR("\t"HOR"", ""HOR"");
 
-	DO(2, BAR("\u254b", "\u2501")BAR("\u2501", "\u2501"));
+	DO(2, BAR(""CRS"", ""HOR"")BAR(""HOR"", ""HOR""));
 
-	printf("\n");
-	DO(len, LINE(i, array[i], k - array[i].num));
-	printf("\n");
-	free(array);
+	O("\n");
+
+
+	DO(len, {	O("\t    \x1B[%dmL%d\t\x1B[0m"VER"\t\x1B[%dm%d\t\x1B[0m"VER"\t\x1B[0m", 
+				(arr[i].col),(i+1),(arr[i].col),(arr[i].num));
+				(k-arr[i].num)	?	O("%d\n",(k-arr[i].num))	:	O("---\n");})
+
+	O("\n");
+	free(arr);
 }
 
-rod* get_info()
+// 	возвращает массив длиной k найденных длин
+//	составляет массив с учетом большинства возможных деффектов ввода
+rod* input()
 {
 	int i;
-	rod *array;
+	rod *arr;
 	char c = ' ';
-	array = malloc(sizeof(rod) * len);
+	arr = malloc(SZ(rod) * len);
 
 	for (i = 0; i < len; i++) {
-		scanf("%d", &(array[i].num));
+		scanf("%d", &(arr[i].num));
 		
-		array[i].col = (i < 7 || i > 9) ? i : i + 3;		//<	colour magic ^***^
-		array[i].col += 31;
+		arr[i].col = (i < 7 || i > 9) ? i : i + 3;		//<	colour magic ^***^
+		arr[i].col += 31;
 
-		if (array[i].num < 1) {
-			array = realloc(array, sizeof(rod) * (--len));
+		if (arr[i].num < 1) {
+			arr = realloc(arr, SZ(rod) * (--len));
 			i--;
 		}
 	}
@@ -102,74 +90,81 @@ rod* get_info()
 	while (c != '\n' && c)
 		scanf("%c", &c);
 
-	return array;
+	R arr;
 }
 
 //	проверка на превышение лимита количества ребер одной плоскости
-int check(rod *array, int max)
+//	возвращает номер самого большого элемента массива, если было превышение
+//	если превышения не было, то -1
+int check(rod *arr, int max)
 {
+	int j = -1, a = 0;
 	for (int i = 0; i < len; i++)
-		if (array[i].num > max)
-			return 0;
-
-	return 1;
+		if (arr[i].num > max && arr[i].num > a) {  
+			a = arr[i].num; 
+			j = i;
+		}
+		
+	R j;
 }
 
 //	вычисление минимальной размерности пространства
-int calc_dim(rod *array)
+int compute(rod *arr)
 {
-	int n, k, max_edge, m_e_ = 0, i;
+	int k, max_edge, m_e_ = 0, i;
 
 	if (!len) {
-		printf("\t\e[31mERROR:\e[0m incorrect input\n");
-		return 0;
+		O("\t\e[31mERROR:\e[0m incorrect input\n");
+		free(arr);
+		R 0;
 	}
 
-	max_edge = one_line_edge(len);
+	max_edge = edges_in_one_dim(len);
+	k = check(arr, max_edge);
 
-	if (check(array, max_edge)) {
-		if (yes_or_no("\tvertical output [else: horizontal]?"))
-			vertical_table(array);
+	if (k == -1) {
+		if (y_or_n("\tvertical output [else: horizontal]?"))
+			ver_tbl(arr);
 		else 
-			horizontal_table(array);
+			hor_tbl(arr);
+		R len;
+	} else {
+		arr = realloc(arr, SZ(rod) * ++len);
 
-		return len;
+		for (i = 0; m_e_ <= arr[k].num/2; i++) 
+			m_e_ = edges_in_one_dim(len + i);
+
+		// 	выбирает самое близкое значение к arr[k].num/2 из 
+		//	двух ближайших лимитов ребер пространств N и N-1
+		m_e_ /= ((m_e_*3/2)>= arr[k].num) ? 2 : 1;
+
+		//	от самого большого элемента вычитается найденный 
+		// 	ближайший лимит ребер. сам лимит записывается в 
+		//	в новый элемент массива. туда же и записывается 
+		//	родительский цвет
+		arr[len - 1].num = m_e_;
+		arr[k].num -= m_e_;
+		arr[len - 1].col = arr[k].col;
+
+		R compute(arr);
 	}
-	else {
-		n = find_max(array);
-		array = realloc(array, sizeof(rod) * ++len);
-
-		for (i = 0; m_e_ <= array[n].num/2; i++) 
-			m_e_ = one_line_edge(len + i);
-		m_e_ = (m_e_ - array[n].num/2 < array[n].num/2 - m_e_/2) ? m_e_ : m_e_/2;
-
-		// m_e_ /= 2;
-		array[len - 1].num = m_e_;
-		array[len - 1].col = array[n].col;
-
-		array[n].num -= m_e_;
-
-
-		return calc_dim(array);
-	}
-	return 0;
 }
 
 int main()
 {
 	loop: 
-	printf("\n\tenter number of lengths and number of edges of each length\n\n\t");
+	O("\n\tenter number of lengths and number of edges of each length\n\n\t");
 	scanf("%d", &len);
 
 	if (len < 1) {
-		printf("\e[31mERROR:\e[0m incorrect input\n");
-		return 1;
+		O("\e[31mERROR:\e[0m incorrect input\n");
+		R 1;
 	}
 
-	printf("\n\tN - %d\n\t\n", calc_dim(get_info()));
-	if (yes_or_no("\tfind another dimension?"))
+	O("\n\tN - %d\n\t\n", compute(input()));
+	if (y_or_n("\tfind another dimension?"))
 		goto loop;
-	return 0;
+	R 0;
 }
 
 
