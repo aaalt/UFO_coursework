@@ -57,7 +57,7 @@ void horizontal_table(rod* array)
 	DO(len, printf("\u2503 \x1B[%dm     %d\x1B[0m\t", array[i].col, array[i].num));
 
 	printf("\n\tlost\t");
-	DO(len, k - array[i].num ? 	printf("\u2503      %d\t", k - array[i].num) 	: 		printf("\u2503  -\t");)
+	DO(len, k - array[i].num ? 	printf("\u2503      %d\t", k - array[i].num) 	: 		printf("\u2503      -\t");)
 
 	BAR("\n\t\u2501", "\u2501");
 	DO(len, BAR("\u253b", "\u2501")BAR("\u2501", "\u2501"));
