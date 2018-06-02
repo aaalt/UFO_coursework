@@ -72,7 +72,8 @@
 
 ПРИМЕРЫ 
 
-	![ex_1](master/UFO/ex_1.png)		!(ex_2)[master/UFO/ex_2.png]  
+![ex_1](https://github.com/altnova/UFO/blob/master/ex_1.png)	
+![ex_2](https://github.com/altnova/UFO/blob/master/ex_2.png)  
 
 [1]: [Hans Walser: Der n-dimensionale Hyperwürfel](https://www.walser-h-m.ch/hans/Vortraege/Vortrag39_2/Hyperwuerfel.pdf)
 
