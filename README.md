@@ -72,7 +72,7 @@
 
 ПРИМЕРЫ 
 
-	ex_1.png 		ex_2.png  
+	![ex_1](ex_1.png)		!(ex_2)[ex_2.png]  
 
 [1]: [Hans Walser: Der n-dimensionale Hyperwürfel](https://www.walser-h-m.ch/hans/Vortraege/Vortrag39_2/Hyperwuerfel.pdf)
 
